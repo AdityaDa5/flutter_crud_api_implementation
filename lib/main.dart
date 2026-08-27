@@ -17,7 +17,7 @@ class ContactApp extends StatelessWidget {
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(
           seedColor: Colors.purple,
-          surface: Colors.white, // White background as requested
+          surface: Colors.white,
         ),
         useMaterial3: true,
         scaffoldBackgroundColor: Colors.white,
