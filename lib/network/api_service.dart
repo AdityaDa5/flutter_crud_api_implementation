@@ -1,11 +1,13 @@
+import 'dart:convert';
+
 import 'package:dio/dio.dart';
+import 'package:crud_api_implementation/models/contact_model.dart';
 
 class ApiService {
   final Dio _dio = Dio();
   final String _baseUrl =
       'https://farmbrothers.co.in/erp/Api_delivery/api_list';
 
-  // Helper method to make GET requests and format terminal output
   Future<String> _makeRequest(Map<String, dynamic> queryParameters) async {
     try {
       final response = await _dio.get(
@@ -35,8 +37,32 @@ class ApiService {
     });
   }
 
-  Future<String> getContacts() async {
-    return _makeRequest({'method': 'get_contacts'});
+  // Modified to return List<Contact>
+  Future<List<Contact>> getContacts() async {
+    try {
+      final response = await _dio.get(
+        _baseUrl,
+        queryParameters: {'method': 'get_contacts'},
+      );
+
+      if (response.statusCode == 200) {
+        final dynamic responseData = response.data is String
+            ? json.decode(response.data)
+            : response.data;
+
+        final contactModel = ContactModel.fromJson(responseData);
+
+        return contactModel.contacts ?? [];
+      } else {
+        throw Exception(
+          'Failed to load contacts. Status code: ${response.statusCode}',
+        );
+      }
+    } on DioException catch (e) {
+      throw Exception('Network error: ${e.message}');
+    } catch (e) {
+      throw Exception('Unexpected error: $e');
+    }
   }
 
   Future<String> updateContact({
